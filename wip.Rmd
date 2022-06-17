@@ -1,0 +1,24 @@
+---
+title: "R Notebook"
+output: html_notebook
+editor_options: 
+  chunk_output_type: inline
+---
+ 
+```{r}
+
+start()
+
+ROI = ROI()
+
+lop = hycom(date = "20190101", scale = 160000, band = c("water_temp_0", "velocity_u_0" ), interval = 20)
+
+
+```
+
+
+```{r}
+
+
+```
+

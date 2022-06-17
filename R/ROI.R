@@ -13,9 +13,9 @@ ROI = function( stri = "[117.83526716151925, 15.49233818000526],
   for (i in 1:40) {
 
 
-    str_replace(stri, "\\[","c(") %>%
-      str_replace("\\]","\\)") %>%
-      str_replace("\n"," ") ->stri
+    stringr::str_replace(stri, "\\[","c(") %>%
+      stringr::str_replace("\\]","\\)") %>%
+      stringr::str_replace("\n"," ") ->stri
 
   }
 
