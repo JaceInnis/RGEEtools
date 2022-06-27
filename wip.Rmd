@@ -7,17 +7,25 @@ editor_options:
  
 ```{r}
 
-start()
+devtools::install_github("JaceInnis/RGEEtools")
 
-ROI = ROI()
-
-lop = hycom(date = "20190101", scale = 160000, band = c("water_temp_0", "velocity_u_0" ), interval = 20)
-
+library(RGEEtools)
 
 ```
 
 
 ```{r}
+
+start()
+
+
+RGEEtools::ROI()
+
+
+ROI = ROI()
+
+lop = hycom(date = "20190101", scale = 160000, band = c("water_temp_0", "velocity_u_0" ), interval = 20)
+
 
 
 ```
