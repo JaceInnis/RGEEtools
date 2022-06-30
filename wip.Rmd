@@ -15,17 +15,27 @@ library(RGEEtools)
 
 
 ```{r}
-
+  
 start()
 
 
-RGEEtools::ROI()
+phil = ROI()
+
+hutolist = function(ROI, date ,interval , scale, band){
+  date = lubridate::ymd(date)
+  i_date = as.character(date-interval)
+  f_date = as.character((date))
+  
+  data = ee$ImageCollection('HYCOM/sea_water_velocity')$
+    filterDate(i_date, f_date)$select(band)$mean()$
+    sample(region = ROI, scale = scale , geometries = TRUE)$getInfo()
+  return(data)
+}
+
+vis = hutolist(ROI = phil, date = "20200401", interval = 5, scale = 16000, band = c('velocity_u_0','velocity_v_0'))
 
 
-ROI = ROI()
-
-lop = hycom(date = "20190101", scale = 160000, band = c("water_temp_0", "velocity_u_0" ), interval = 20)
-
+df = geetodf(vis)
 
 
 ```

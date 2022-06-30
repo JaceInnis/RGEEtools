@@ -1,14 +1,4 @@
 
-
-
-
-
-
-
-
-
-
-
 hycom = function(date = '20190101', scale = 160000, band = c('water_temp_0','water_temp_6','water_temp_12'
                                                              ,'water_temp_20','water_temp_30', 'velocity_u_0')
                  , interval = 15)
@@ -25,8 +15,9 @@ hycom = function(date = '20190101', scale = 160000, band = c('water_temp_0','wat
   velb = c()
   temb = c()
 
+
   for (i in 1:nbad) {
-    if(str_detect(band[i], "velo")){
+    if(stringr::str_detect(band[i], "velo")){
       velb = c(velb, band[i])
     }
     else{
@@ -35,12 +26,12 @@ hycom = function(date = '20190101', scale = 160000, band = c('water_temp_0','wat
   }
 
 
-  sea = ee$ImageCollection("HYCOM/sea_temp_salinity")$
+  sea = rgee::ee$ImageCollection("HYCOM/sea_temp_salinity")$
     filterDate(i_date, f_date)$select(temb)$mean()$
     sample(region = ROI, scale = scale , geometries = TRUE , seed = 10)$getInfo()
 
 
-  vel = ee$ImageCollection('HYCOM/sea_water_velocity')$
+  vel = rgee::ee$ImageCollection('HYCOM/sea_water_velocity')$
     filterDate(i_date, f_date)$select(velb)$mean()$
     sample(region = ROI, scale = scale , geometries = TRUE , seed = 10)$getInfo()
 
@@ -70,24 +61,23 @@ hycom = function(date = '20190101', scale = 160000, band = c('water_temp_0','wat
 
 
 
-
-  box = acast(data, V2~V1, value.var= paste0("V",3))
+  box = reshape2::acast(data, V2~V1, value.var= paste0("V",3))
 
   ret = array(NA, dim = c( dim(box), nbad))
 
 
   for (t in 1:nbad) {
-    box = acast(data, V2~V1, value.var= paste0("V",(t+2)))
+    box = reshape2::acast(data, V2~V1, value.var= paste0("V",(t+2)))
 
 
     if(any(is.na(box))){
-      datas<-melt(box)
+      datas<-reshape2::melt(box)
       for (i in 1:nrow(datas)) {
         if (is.na(datas[i,3])){
           datas[i,3] = mean(datas$value , na.rm = TRUE)
         }
       }
-      box = acast(datas, Var2~Var1, value.var= "value")
+      box = reshape2::acast(datas, Var2~Var1, value.var= "value")
     }
     ret[,,t] = box
   }
