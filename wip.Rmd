@@ -4,39 +4,209 @@ output: html_notebook
 editor_options: 
   chunk_output_type: inline
 ---
- 
-```{r}
-
-devtools::install_github("JaceInnis/RGEEtools")
-
-library(RGEEtools)
-
-```
 
 
 ```{r}
   
-start()
+# start()
 
 
-phil = ROI()
+phil = ROI("[-98.73331425575971, 31.870991349177885],
+          [-98.73331425575971, 17.469056715317958],
+          [-77.55167363075971, 17.469056715317958],
+          [-77.55167363075971, 31.870991349177885]")
 
-hutolist = function(ROI, date ,interval , scale, band){
-  date = lubridate::ymd(date)
-  i_date = as.character(date-interval)
-  f_date = as.character((date))
-  
-  data = ee$ImageCollection('HYCOM/sea_water_velocity')$
-    filterDate(i_date, f_date)$select(band)$mean()$
-    sample(region = ROI, scale = scale , geometries = TRUE)$getInfo()
-  return(data)
-}
 
-vis = hutolist(ROI = phil, date = "20200401", interval = 5, scale = 16000, band = c('velocity_u_0','velocity_v_0'))
+vis = wvtolist(ROI = phil, date = "20180805", interval = 5, scale = 40000, depth = 0)
+
+tis = ssetolist(ROI = phil, date = "20180805", interval = 5, scale = 40000)
+
 
 
 df = geetodf(vis)
 
+df2 = geetodf(tis)
+
+df = inner_join(df, df2)
+
+
+awr = thin(df, 1)
+
+
+
+ggplot(df, aes(lon, lat)) +
+  geom_raster(aes( fill = surface_elevation), interpolate=TRUE)+
+  geom_segment(aes(x = lon,y =  lat, xend = lon + velocity_u_0/1200, yend = lat + velocity_v_0/1200),
+              size = 0.4 , arrow = arrow(length = unit(0.1,"cm")), 
+              data = df[awr,] )+
+  scale_fill_gradientn(colours=c("blue","green","red"))+
+  borders("world", 
+          xlim = c(min(df$lon), max(df$lon)), 
+          ylim = c(min(df$lat), max(df$lat)),
+          fill = "dark green") +
+  coord_fixed(xlim = c(min(df$lon), max(df$lon)),
+              ylim = c(min(df$lat), max(df$lat)))+
+  theme(legend.position="none")
+
 
 ```
+
+
+
+This next code chunk is an attempt to anamate the above plot
+```{r}
+
+for (i in 1:23) {
+
+  date = lubridate::ymd("20180805")
+  date = date + 14*(i-1)
+
+
+vis = wvtolist(ROI = phil, date = date, interval = 14, scale = 40000, band = c('velocity_u_0','velocity_v_0'))
+
+tis = ssetolist(ROI = phil, date = date, interval = 14, scale = 40000)
+
+
+
+df = geetodf(vis)
+
+df2 = geetodf(tis)
+
+df = inner_join(df,df2)
+
+if(!i==1){
+df = left_join(template, df)
+}
+df$int = rep(i, nrow(df))
+
+awr = thin(df, 2)
+
+if(i ==1){
+  fin = df
+  awrf = awr
+  template = df[,1:2]
+}
+else{
+  awrf = c(awr, awr + nrow(fin))
+  fin = rbind(fin,df)
+}
+print(i)
+print(nrow(df))
+}
+
+
+
+```
+
+6 is last before white
+
+```{r}
+
+milo = min(fin$lon)
+malo = max(fin$lon)
+mila = min(fin$lat)
+mala = max(fin$lat)
+
+ggplot(fin, aes(lon, lat)) +
+  geom_raster(aes( fill = surface_elevation), interpolate=TRUE)+
+  geom_segment(aes(x = lon,y =  lat, xend = lon + velocity_u_0/1200, yend = lat + velocity_v_0/1200),
+              size = 0.4 , arrow = arrow(length = unit(0.1,"cm")), 
+              data = fin)+
+  scale_fill_gradientn(colours=c("blue","green","red"))+
+  borders("world", 
+          xlim = c(milo, malo), 
+          ylim = c(mila, mala),
+          fill = "dark green") +
+  coord_fixed(xlim = c(milo, malo),
+              ylim = c(mila, mala))+
+  theme(legend.position="none") +
+  labs(title = 'Interval(14 day): {frame_time}', x = 'Longitude', y = 'Latitude') +
+  transition_time(int) +
+  ease_aes('linear')
+
+```
+
+
+
+
+```{r}
+
+test1 = fin %>% 
+  filter(int == 1) %>% 
+  select(lon, lat, velocity_u_0)
+
+
+test2 = fin %>% 
+  filter(int == 7)%>% 
+  select(lon, lat, velocity_v_0)
+
+test3 = full_join(test1, test2)
+
+test3 %>% 
+  filter(is.na(velocity_u_0))
+
+```
+
+
+
+
+
+
+```{r}
+
+fin %>% 
+  filter(is.na(surface_elevation))
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+install.packages("gganimate")
+
+library(gapminder)
+library(gganimate)
+
+
+
+## standard ggplot2
+ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, colour = country)) +
+  geom_point(alpha = 0.7, show.legend = FALSE) +
+  scale_colour_manual(values = country_colors) +
+  scale_size(range = c(2, 12)) +
+  scale_x_log10() +
+  # Here comes the gganimate specific bits
+  labs(title = 'Year: {frame_time}', x = 'GDP per capita', y = 'life expectancy') +
+  transition_time(year) +
+  ease_aes('linear')
+
+```
+
+
+```{r}
+library(usethis)
+use_readme_rmd()
+```
+```{r}
+ROI = ROI("[-91.157, 28.628], [-91.157, 20.977], [-80.433, 20.977], [-80.434, 28.628]")
+
+df = ssetolist(ROI, "20010928", 5, 30000)
+
+df = geetodf(df)
+
+ggplot(df, aes(lon, lat)) +
+  geom_raster(aes( fill = surface_elevation))
+```
+
+
 

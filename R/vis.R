@@ -14,3 +14,5 @@ ggplot(longData, aes(x = Var2, y = Var1)) +
   labs(x="lat", y="lon")
 }
 
+
+

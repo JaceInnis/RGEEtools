@@ -1,11 +1,11 @@
-
-
-
-
-
-
-
-
+#' A developer tool that should be deleted with final publish
+#'
+#' @param path
+#'
+#' @return
+#' @export
+#'
+#' @examples
 start = function(path = "C:\\Users\\jacei\\anaconda3\\envs\\rgee_py"){
   rgee_environment_dir = path
   library(raster)
