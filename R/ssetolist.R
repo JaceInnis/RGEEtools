@@ -1,26 +1,29 @@
-#' outputs list of water elevation with specified parameters
+#' Sample HYCOM sea surface elevation
 #'
-#' @description The point of this function is to extract data from a specific region (ROI), time (date), resolution (scale), avraged across a specified number of days (interval), from the HYCOM numerical model hosted on Google Earth Engine.
+#' Sample mean sea surface elevation for a region and date interval from the
+#' HYCOM dataset hosted on Google Earth Engine. The end date is exclusive, as
+#' in Earth Engine's `filterDate()` method.
 #'
-#' @param ROI an ee.geometry object, created by the ROI() function
-#' @param date a string in "YYYYMMDD" format. (ultimate day of interval)
-#' @param interval an integer to specify the number of days in the interval to average
-#' @param scale  the resolution in meters that sampling takes place (must output less than 5000 points)
+#' @param ROI An Earth Engine geometry defining the sampling region.
+#' @param date Date string in `YYYYMMDD` format; this is the exclusive end date
+#'   of the averaging interval.
+#' @param interval Positive whole number of days before `date` to include.
+#' @param scale Positive sampling resolution in meters. Earth Engine may limit
+#'   the number of returned points for large regions or fine resolutions.
 #'
-#' @return
+#' @return The result of Earth Engine's `getInfo()` for a sampled feature
+#'   collection.
 #' @export
 #'
 #' @examples
-#' ROI = ROI()
-#' list = ssetolist(ROI, "20010928", 5, 30000)
-
-ssetolist = function(ROI, date ,interval , scale){
-  date = lubridate::ymd(date)
-  i_date = as.character(date-interval)
-  f_date = as.character((date))
-
-  data = ee$ImageCollection('HYCOM/sea_surface_elevation')$
-    filterDate(i_date, f_date)$select("surface_elevation")$mean()$
-    sample(region = ROI, scale = scale , geometries = TRUE, seed = 10)$getInfo()
-  return(data)
+#' \dontrun{
+#' region <- ROI()
+#' result <- ssetolist(region, "20010928", 5, 30000)
+#' }
+ssetolist <- function(ROI, date, interval, scale) {
+  .hycom_sample(
+    ROI, date, interval, scale,
+    collection = "HYCOM/sea_surface_elevation",
+    bands = "surface_elevation"
+  )
 }

@@ -2,26 +2,33 @@
 % Please edit documentation in R/ssetolist.R
 \name{ssetolist}
 \alias{ssetolist}
-\title{outputs list of water elevation with specified parameters}
+\title{Sample HYCOM sea surface elevation}
 \usage{
 ssetolist(ROI, date, interval, scale)
 }
 \arguments{
-\item{ROI}{an ee.geometry object, created by the ROI() function}
+\item{ROI}{An Earth Engine geometry defining the sampling region.}
 
-\item{date}{a string in "YYYYMMDD" format. (ultimate day of interval)}
+\item{date}{Date string in `YYYYMMDD` format; this is the exclusive end date
+of the averaging interval.}
 
-\item{interval}{an integer to specify the number of days in the interval to average}
+\item{interval}{Positive whole number of days before `date` to include.}
 
-\item{scale}{the resolution in meters that sampling takes place (must output less than 5000 points)}
+\item{scale}{Positive sampling resolution in meters. Earth Engine may limit
+the number of returned points for large regions or fine resolutions.}
 }
 \value{
-
+The result of Earth Engine's `getInfo()` for a sampled feature
+  collection.
 }
 \description{
-The point of this function is to extract data from a specific region (ROI), time (date), resolution (scale), avraged across a specified number of days (interval), from the HYCOM numerical model hosted on Google Earth Engine.
+Sample mean sea surface elevation for a region and date interval from the
+HYCOM dataset hosted on Google Earth Engine. The end date is exclusive, as
+in Earth Engine's `filterDate()` method.
 }
 \examples{
-ROI = ROI()
-list = ssetolist(ROI, "20010928", 5, 30000)
+\dontrun{
+region <- ROI()
+result <- ssetolist(region, "20010928", 5, 30000)
+}
 }

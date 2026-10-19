@@ -2,23 +2,29 @@
 % Please edit documentation in R/ROI.R
 \name{ROI}
 \alias{ROI}
-\title{Creates a ee.geometry object from a string of coordinate points copied from gee}
+\title{Create a Google Earth Engine polygon from coordinate pairs}
 \usage{
 ROI(
- 
-    stri = "[117.83526716151925, 15.49233818000526],\\n          [117.83526716151925, 6.486174330165204],\\n          [129.74444684901925, 6.486174330165204],\\n          [129.74444684901925, 15.49233818000526]"
+  stri = paste("[117.83526716151925, 15.49233818000526],",
+    "[117.83526716151925, 6.486174330165204],",
+    "[129.74444684901925, 6.486174330165204],",
+    "[129.74444684901925, 15.49233818000526]")
 )
 }
 \arguments{
-\item{stri}{a string of coordinate points copy and pasted from the gee gui}
+\item{stri}{Character scalar containing at least three longitude/latitude
+pairs. Coordinates may be separated by commas or whitespace.}
 }
 \value{
-
+An Earth Engine polygon geometry.
 }
 \description{
-Due to no map interface in the rgee version of gee, this function makes the importation of coordinate points easy. I have found that when exploring data in different regions, that having an open window of gee which allows for the easy creation of geometry objects and copying the coordinates into thos function
+Convert comma-separated `[longitude, latitude]` pairs, such as those copied
+from the Earth Engine Code Editor, into an `ee$Geometry$Polygon`.
 }
 \examples{
-ROI = ROI("[-91.157, 28.628], [-91.157, 20.977], [-80.433, 20.977], [-80.434, 28.628]")
-
+\dontrun{
+region <- ROI("[-91.157, 28.628], [-91.157, 20.977],
+              [-80.433, 20.977], [-80.434, 28.628]")
+}
 }

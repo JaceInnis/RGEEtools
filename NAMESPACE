@@ -3,7 +3,6 @@
 export(ROI)
 export(geetodf)
 export(ssetolist)
-export(start)
 export(thin)
 export(wstolist)
 export(wttolist)

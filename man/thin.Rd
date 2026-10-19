@@ -2,19 +2,24 @@
 % Please edit documentation in R/thin.R
 \name{thin}
 \alias{thin}
-\title{this is a function that will thin out the number of arrows in a vector plot}
+\title{Select a regularly thinned set of grid rows}
 \usage{
 thin(df, by)
 }
 \arguments{
-\item{by}{}
+\item{df}{Data frame containing numeric `lon` and `lat` columns.}
+
+\item{by}{Positive whole-number spacing between selected unique coordinate
+values.}
 }
 \value{
-
+Integer row indices into `df`.
 }
 \description{
-this is a function that will thin out the number of arrows in a vector plot
+Return row indices whose longitude and latitude are each among every
+`by`-th sorted unique coordinate. The input data frame is not modified.
 }
 \examples{
-vect = thin(df)
+grid <- expand.grid(lon = 1:4, lat = 1:4)
+thin(grid, by = 2)
 }

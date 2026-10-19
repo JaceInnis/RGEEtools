@@ -1,3 +1,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^\.github$
 ^README\.Rmd$
+^PACKAGE-REPAIR-PLAN\.md$
+^wip\.Rmd$
+^wip\.nb\.html$

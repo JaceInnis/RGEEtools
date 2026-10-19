@@ -2,28 +2,34 @@
 % Please edit documentation in R/wstolist.R
 \name{wstolist}
 \alias{wstolist}
-\title{outputs list of Salinity data with specified parameters}
+\title{Sample HYCOM salinity}
 \usage{
 wstolist(ROI, date, interval, scale, depth)
 }
 \arguments{
-\item{ROI}{an ee.geometry object, created by the ROI() function}
+\item{ROI}{An Earth Engine geometry defining the sampling region.}
 
-\item{date}{a string in "YYYYMMDD" format. (ultimate day of interval)}
+\item{date}{Date string in `YYYYMMDD` format; the exclusive end date of the
+averaging interval.}
 
-\item{interval}{an integer to specify the number of days in the interval to average}
+\item{interval}{Positive whole number of days before `date` to include.}
 
-\item{scale}{the resolution in meters that sampling takes place (must output less than 5000 points)}
+\item{scale}{Positive sampling resolution in meters.}
 
-\item{depth}{the depth at which the data will be pulled (read documentation for specified depths)}
+\item{depth}{Non-negative whole-number depth used to select the HYCOM band.
+The requested depth must be available in the upstream dataset.}
 }
 \value{
-
+The result of Earth Engine's `getInfo()` for a sampled feature
+  collection.
 }
 \description{
-The point of this function is to extract data from a specific region (ROI), time (date), resolution (scale), avraged across a specified number of days (interval), from the HYCOM numerical model hosted on Google Earth Engine.
+Sample mean salinity at a given depth for a region and date interval from
+the HYCOM dataset hosted on Google Earth Engine. The end date is exclusive.
 }
 \examples{
-ROI = ROI()
-list = wstolist(ROI, "20010928", 5, 30000, 10)
+\dontrun{
+region <- ROI()
+result <- wstolist(region, "20010928", 5, 30000, depth = 10)
+}
 }

@@ -1,29 +1,31 @@
-#' outputs list of water velocity data with specified parameters
+#' Sample HYCOM water velocity
 #'
-#' @description The point of this function is to extract data from a specific region (ROI), time (date), resolution (scale), avraged across a specified number of days (interval), from the HYCOM numerical model hosted on Google Earth Engine.
+#' Sample mean eastward and northward water velocity at a given depth for a
+#' region and date interval from the HYCOM dataset hosted on Google Earth
+#' Engine. The end date is exclusive.
 #'
-#' @param ROI an ee.geometry object, created by the ROI() function
-#' @param date a string in "YYYYMMDD" format. (ultimate day of interval)
-#' @param interval an integer to specify the number of days in the interval to average
-#' @param scale  the resolution in meters that sampling takes place (must output less than 5000 points)
-#' @param depth the depth at which the data will be pulled (read documentation for specified depths)
+#' @param ROI An Earth Engine geometry defining the sampling region.
+#' @param date Date string in `YYYYMMDD` format; the exclusive end date of the
+#'   averaging interval.
+#' @param interval Positive whole number of days before `date` to include.
+#' @param scale Positive sampling resolution in meters.
+#' @param depth Non-negative whole-number depth used to select the HYCOM bands.
+#'   The requested depth must be available in the upstream dataset.
 #'
-#' @return
+#' @return The result of Earth Engine's `getInfo()` for a sampled feature
+#'   collection.
 #' @export
 #'
 #' @examples
-#' ROI = ROI()
-#' list = wvtolist(ROI, "20010928", 5, 30000, 10)
-wvtolist = function(ROI, date, interval, scale, depth){
-
-  band =   c(paste0("velocity_u_", depth),paste0("velocity_v_", depth))
-
-  date = lubridate::ymd(date)
-  i_date = as.character(date-interval)
-  f_date = as.character((date))
-
-  data = rgee::ee$ImageCollection('HYCOM/sea_water_velocity')$
-    filterDate(i_date, f_date)$select(band)$mean()$
-    sample(region = ROI, scale = scale , geometries = TRUE, seed = 10)$getInfo()
-  return(data)
+#' \dontrun{
+#' region <- ROI()
+#' result <- wvtolist(region, "20010928", 5, 30000, depth = 0)
+#' }
+wvtolist <- function(ROI, date, interval, scale, depth) {
+  .validate_hycom_arguments(ROI, date, interval, scale, depth)
+  .hycom_sample(
+    ROI, date, interval, scale,
+    collection = "HYCOM/sea_water_velocity",
+    bands = c(paste0("velocity_u_", depth), paste0("velocity_v_", depth))
+  )
 }
