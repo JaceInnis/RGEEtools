@@ -1,6 +1,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^\.github$
+^\.gitattributes$
 ^README\.Rmd$
 ^PACKAGE-REPAIR-PLAN\.md$
 ^wip\.Rmd$
